@@ -16,6 +16,6 @@ func BuildInsertColumnClause(val interface{}) (string) {
 		valueFields = append(valueFields, "$" + strconv.Itoa(i + 1) )
 	}
 	return "INSERT INTO " + tableName + " (" + strings.Join(columns,",") + ") " +
-		" VALUES ( " + strings.Join(valueFields,",") + " )"
+		" VALUES (" + strings.Join(valueFields,",") + ")"
 }
 

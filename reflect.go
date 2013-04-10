@@ -57,7 +57,6 @@ func ParseColumnNames(val interface{}) ([]string) {
 		}
 	}
 	columnNameCache[structName] = columns
-
 	return columns
 }
 
