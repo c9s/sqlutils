@@ -19,7 +19,7 @@ func BuildSelectClause(val interface{}) (string) {
 	return "SELECT " + BuildSelectColumnClause(val) + " FROM " + tableName;
 }
 
-func PrepareAndExecute(db *sql.DB, sql string, args ...interface{}) (*sql.Rows,error) {
+func PrepareAndQuery(db *sql.DB, sql string, args ...interface{}) (*sql.Rows,error) {
 	stmt, err := db.Prepare(sql)
 	if err != nil {
 		return nil, err
