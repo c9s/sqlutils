@@ -1,5 +1,6 @@
 package sqlutils
 import "testing"
+import "strings"
 
 func TestBuildWhereClause(t *testing.T) {
 	argMap := map[string]interface{} {
@@ -7,14 +8,15 @@ func TestBuildWhereClause(t *testing.T) {
 		"id": 123,
 	}
 	sql, args := BuildWhereClauseWithAndOp(argMap)
-	if sql != " WHERE name = $1 AND id = $2" {
+
+	if strings.Index(sql, "name = $") == -1 {
 		t.Fatal(sql)
 	}
-	if args[0] != "foo" {
-		t.Fail()
+	if strings.Index(sql, "id = $") == -1 {
+		t.Fatal(sql)
 	}
-	if args[1] != 123 {
-		t.Fail()
+	if len(args) != 2 {
+		t.Fatal("lenght is not 2")
 	}
 }
 
