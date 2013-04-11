@@ -38,6 +38,7 @@ func GetPrimaryKeyColumnName(val interface{}) (*string) {
 }
 
 
+// Convert type name to table name with underscore and plurize.
 func GetTableNameFromTypeName(typeName string) (string) {
 	if cache, ok := tableNameCache[ typeName ] ; ok {
 		return cache
@@ -58,6 +59,8 @@ func GetColumnAttributesFromTag(tag *reflect.StructTag) (map[string]bool) {
 	return attributes
 }
 
+// Extract column name attribute from struct tag (the first element) of the 'field' tag or 
+// column name from 'json' tag.
 func GetColumnNameFromTag(tag *reflect.StructTag) (*string) {
 	fieldTags := strings.Split(tag.Get("field"),",")
 	if len(fieldTags[0]) > 0 {
@@ -70,6 +73,9 @@ func GetColumnNameFromTag(tag *reflect.StructTag) (*string) {
 	return nil
 }
 
+
+// Iterate structure fields and return the 
+// values with map[string] interface{}
 func GetColumnValueMap(val interface{}) (map[string] interface{}) {
 	t := reflect.ValueOf(val).Elem()
 	typeOfT := t.Type()
@@ -88,7 +94,7 @@ func GetColumnValueMap(val interface{}) (map[string] interface{}) {
 	return columns
 }
 
-// Parse SQL columns from struct
+// Iterate struct names and return a slice that contains column names.
 func ParseColumnNames(val interface{}) ([]string) {
 	t := reflect.ValueOf(val).Elem()
 	typeOfT := t.Type()
