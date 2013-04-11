@@ -12,7 +12,6 @@ type PrimaryKey interface {
 	GetPkId() int
 }
 
-
 func GetTableName(val interface{}) (string) {
 	t := reflect.ValueOf(val)
 	typeOfT := t.Type()
@@ -42,7 +41,7 @@ func GetColumnNameFromTag(tag *reflect.StructTag) (*string) {
 }
 
 func GetColumnMap(val interface{}) (map[string] interface{}) {
-	t := reflect.ValueOf(val)
+	t := reflect.ValueOf(val).Elem()
 	typeOfT := t.Type()
 
 	// var structName string = typeOfT.String()
@@ -62,7 +61,7 @@ func GetColumnMap(val interface{}) (map[string] interface{}) {
 
 // Parse SQL columns from struct
 func ParseColumnNames(val interface{}) ([]string) {
-	t := reflect.ValueOf(val)
+	t := reflect.ValueOf(val).Elem()
 	typeOfT := t.Type()
 
 	var structName string = typeOfT.String()
@@ -81,4 +80,5 @@ func ParseColumnNames(val interface{}) ([]string) {
 	columnNameCache[structName] = columns
 	return columns
 }
+
 

@@ -9,7 +9,7 @@ import "github.com/c9s/inflect"
 
 // Generate "UPDATE {table} SET name = $1, name2 = $2"
 func BuildUpdateColumnClause(val interface{}) (string) {
-	t := reflect.ValueOf(val)
+	t := reflect.ValueOf(val).Elem()
 	typeOfT := t.Type()
 	tableName := inflect.Tableize(typeOfT.Name())
 	return "UPDATE " + tableName + " SET " + BuildUpdateColumns(val)
