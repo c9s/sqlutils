@@ -10,10 +10,12 @@ func BuildInsertColumnClause(val interface{}) (string) {
 	t := reflect.ValueOf(val)
 	typeOfT := t.Type()
 	tableName := inflect.Tableize(typeOfT.Name())
-	columns := ParseColumnNames(val)
+	columns   := ParseColumnNames(val)
+	var values      []interface{}
 	var valueFields []string
 	for i, _ := range columns {
 		valueFields = append(valueFields, "$" + strconv.Itoa(i + 1) )
+		values      = append(values, columns)
 	}
 	return "INSERT INTO " + tableName + " (" + strings.Join(columns,",") + ") " +
 		" VALUES (" + strings.Join(valueFields,",") + ")"
