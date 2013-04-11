@@ -1,7 +1,7 @@
 Gatsby SQLUtils
 =================
 
-SQLUtils package helps you build SQL.
+Gatsby SQLUtils package helps you build SQL.
 
 
 Usage

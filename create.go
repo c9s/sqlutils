@@ -1,12 +1,23 @@
 package sqlutils
 import "database/sql"
+import "fmt"
+
+const (
+	DriverPg = 1
+	DriverMysql = 2
+	DriverSqlite = 3
+)
 
 // id, err := sqlutils.Create(struct pointer)
-func Create(db *sql.DB, val interface{}) (*Result) {
+func Create(db *sql.DB, val interface{}, driver int) (*Result) {
 	sql , args := BuildInsertClause(val)
 
 	// for pgsql only
-	sql += " RETURNING id"
+	if driver == DriverPg {
+		sql += " RETURNING id"
+	}
+
+	fmt.Println(db)
 
 	err := CheckRequired(val)
 	if err != nil {
