@@ -17,12 +17,13 @@ Define your struct with json spec or with field tag:
 
 ```go
 type Staff struct {
-	Id        int `json:"id"`
+	Id        int `json:"id" field:",primary,serial"`
 	Name      string `json:"name" field:",required"`
 	Gender    string `json:"gender"`
 	StaffType string `json:"staff_type"` // valid types: doctor, nurse, ...etc
 	Phone     string `json:"phone"`
 }
+
 
 // Implement the PrimaryKey interface
 func (self *Staff) GetPkId() int64 {
@@ -66,6 +67,7 @@ To update struct object:
 staff.Name = "NewName"
 rows, err := Update(db,&staff)
 ```
+
 
 
 
