@@ -4,14 +4,13 @@ package sqlutils
 import "reflect"
 import "strings"
 import "strconv"
-import "github.com/c9s/inflect"
 import "database/sql"
 
 
 func BuildInsertColumnClause(val interface{}) (string, []interface{}) {
-	t := reflect.ValueOf(val)
+	t := reflect.ValueOf(val).Elem()
 	typeOfT := t.Type()
-	tableName := inflect.Tableize(typeOfT.Name())
+	tableName := GetTableName(val)
 
 	var columnNames []string
 	var valueFields []string

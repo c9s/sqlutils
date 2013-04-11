@@ -13,7 +13,7 @@ type PrimaryKey interface {
 }
 
 func GetTableName(val interface{}) (string) {
-	t := reflect.ValueOf(val)
+	t := reflect.ValueOf(val).Elem()
 	typeOfT := t.Type()
 	return inflect.Tableize(typeOfT.Name())
 }
