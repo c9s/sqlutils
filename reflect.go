@@ -46,7 +46,7 @@ func GetColumnNameFromTag(tag *reflect.StructTag) (*string) {
 	return nil
 }
 
-func GetColumnMap(val interface{}) (map[string] interface{}) {
+func GetColumnValueMap(val interface{}) (map[string] interface{}) {
 	t := reflect.ValueOf(val).Elem()
 	typeOfT := t.Type()
 
@@ -56,7 +56,6 @@ func GetColumnMap(val interface{}) (map[string] interface{}) {
 	for i := 0; i < t.NumField(); i++ {
 		var tag reflect.StructTag = typeOfT.Field(i).Tag
 		var field reflect.Value = t.Field(i)
-
 		var columnName *string = GetColumnNameFromTag(&tag)
 		if columnName != nil {
 			columns[ *columnName ] = field.Interface()

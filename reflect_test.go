@@ -19,7 +19,7 @@ func TestTableName(t *testing.T) {
 
 
 func TestColumnNameMap(t *testing.T) {
-	columns := GetColumnMap( &fooRecord{ Id: 3, Name: "Mary" } )
+	columns := GetColumnValueMap( &fooRecord{ Id: 3, Name: "Mary" } )
 	t.Log(columns)
 
 	if len(columns) == 0 {
