@@ -3,7 +3,7 @@ import "testing"
 import "sort"
 
 type fooRecord struct {
-	Id       int    `json:"id" field:",primary"`
+	Id       int64  `json:"id" field:",primary"`
 	Name     string `json:"name"`
 	Type     string `json:"type"`
 	Internal int    `json:-`
@@ -17,17 +17,23 @@ func TestTableName(t *testing.T) {
 	}
 }
 
-func TestPrimaryKeyColumn(t *testing.T) {
+func TestPrimaryKeyColumnName(t *testing.T) {
 	n := GetPrimaryKeyColumnName(&fooRecord{})
 	if n == nil {
 		t.Fatal("Primary key column not found.")
 	}
 }
 
+func TestPrimaryKeyColumnValueFound(t *testing.T) {
+	v := GetPrimaryKeyValue(&fooRecord{ Id: 1 })
+	if v == nil {
+		t.Fatal("Primary key value not found.")
+	}
+}
+
 func TestColumnNameMap(t *testing.T) {
 	columns := GetColumnValueMap( &fooRecord{ Id: 3, Name: "Mary" } )
 	t.Log(columns)
-
 	if len(columns) == 0 {
 		t.Fail()
 	}

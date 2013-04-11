@@ -23,6 +23,11 @@ type Staff struct {
 	StaffType string `json:"staff_type"` // valid types: doctor, nurse, ...etc
 	Phone     string `json:"phone"`
 }
+
+// Implement the PrimaryKey interface
+func (self *Staff) GetPkId() int64 {
+    return self.Id
+}
 ```
 
 To build select clause depends on the struct fields:
@@ -45,7 +50,14 @@ To create new record:
 
 ```go
 staff := Staff{Name:"Mary"}
-Create(db,&staff)
+result := sqlutils.Create(db,&staff)
+
+if result.Error {
+    // handle error
+}
+if result.Id != 0 {
+    // handle primary key id
+}
 ```
 
 To update struct object:

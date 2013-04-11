@@ -17,6 +17,26 @@ func GetTableName(val interface{}) (string) {
 	return GetTableNameFromTypeName(typeName)
 }
 
+func GetPrimaryKeyValue(val interface{}) *int64 {
+	t := reflect.ValueOf(val).Elem()
+	typeOfT := t.Type()
+
+	for i := 0; i < t.NumField(); i++ {
+		var field reflect.Value = t.Field(i)
+		var tag reflect.StructTag = typeOfT.Field(i).Tag
+		var columnName *string = GetColumnNameFromTag(&tag)
+		if columnName == nil {
+			continue
+		}
+		var columnAttributes = GetColumnAttributesFromTag(&tag)
+		if _, ok := columnAttributes["primary"] ; ok {
+			val := field.Interface().(int64)
+			return &val
+		}
+	}
+	return nil
+
+}
 
 // Return the primary key column name, return nil if not found.
 func GetPrimaryKeyColumnName(val interface{}) (*string) {
