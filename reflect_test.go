@@ -29,6 +29,18 @@ func TestPrimaryKeyColumnValueFound(t *testing.T) {
 	if v == nil {
 		t.Fatal("Primary key value not found.")
 	}
+	if *v != 1 {
+		t.Fatal("Unexpected primary key value.")
+	}
+	t.Logf("Primary key value: %d", *v)
+}
+
+func TestPrimaryKeyColumnValueFound2(t *testing.T) {
+	v := GetPrimaryKeyValue(&fooRecord{})
+	if v == nil {
+		t.Fatal("Primary key value not found.")
+	}
+	t.Logf("Primary key value: %d", *v)
 }
 
 func TestColumnNameMap(t *testing.T) {

@@ -17,6 +17,10 @@ func GetTableName(val interface{}) (string) {
 	return GetTableNameFromTypeName(typeName)
 }
 
+
+
+// Find the primary key column and return the value of primary key.
+// Return nil if primary key is not found.
 func GetPrimaryKeyValue(val interface{}) *int64 {
 	t := reflect.ValueOf(val).Elem()
 	typeOfT := t.Type()
