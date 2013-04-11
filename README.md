@@ -50,7 +50,7 @@ To create new record:
 
 ```go
 staff := Staff{Name:"Mary"}
-result := sqlutils.Create(db,&staff)
+result := sqlutils.Create(db,&staff, sqlutils.DriverPg)
 
 if result.Error {
     // handle error
