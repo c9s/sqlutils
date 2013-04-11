@@ -17,6 +17,27 @@ func GetTableName(val interface{}) (string) {
 	return GetTableNameFromTypeName(typeName)
 }
 
+
+// Return the primary key column name, return nil if not found.
+func GetPrimaryKeyColumnName(val interface{}) (*string) {
+	t := reflect.ValueOf(val).Elem()
+	typeOfT := t.Type()
+
+	for i := 0; i < t.NumField(); i++ {
+		var tag reflect.StructTag = typeOfT.Field(i).Tag
+		var columnName *string = GetColumnNameFromTag(&tag)
+		if columnName == nil {
+			continue
+		}
+		var columnAttributes = GetColumnAttributesFromTag(&tag)
+		if _, ok := columnAttributes["primary"] ; ok {
+			return columnName
+		}
+	}
+	return nil
+}
+
+
 func GetTableNameFromTypeName(typeName string) (string) {
 	if cache, ok := tableNameCache[ typeName ] ; ok {
 		return cache
@@ -25,6 +46,9 @@ func GetTableNameFromTypeName(typeName string) (string) {
 	return tableNameCache[typeName]
 }
 
+
+// Extract attributes from "field" tag.
+// Current supported attributes: "required","primary","serial"
 func GetColumnAttributesFromTag(tag *reflect.StructTag) (map[string]bool) {
 	fieldTags := strings.Split(tag.Get("field"),",")
 	attributes := map[string]bool {}
@@ -85,5 +109,8 @@ func ParseColumnNames(val interface{}) ([]string) {
 	columnNameCache[structName] = columns
 	return columns
 }
+
+
+
 
 

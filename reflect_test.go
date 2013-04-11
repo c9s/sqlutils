@@ -3,7 +3,7 @@ import "testing"
 import "sort"
 
 type fooRecord struct {
-	Id       int    `json:"id"`
+	Id       int    `json:"id" field:",primary"`
 	Name     string `json:"name"`
 	Type     string `json:"type"`
 	Internal int    `json:-`
@@ -17,6 +17,12 @@ func TestTableName(t *testing.T) {
 	}
 }
 
+func TestPrimaryKeyColumn(t *testing.T) {
+	n := GetPrimaryKeyColumnName(&fooRecord{})
+	if n == nil {
+		t.Fatal("Primary key column not found.")
+	}
+}
 
 func TestColumnNameMap(t *testing.T) {
 	columns := GetColumnValueMap( &fooRecord{ Id: 3, Name: "Mary" } )
