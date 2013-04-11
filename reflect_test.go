@@ -9,6 +9,15 @@ type fooRecord struct {
 	Internal int    `json:-`
 }
 
+
+func TestTableName(t *testing.T) {
+	n := GetTableName(&fooRecord{})
+	if n != "foo_records" {
+		t.Fatal("table name is not correct: " + n)
+	}
+}
+
+
 func TestColumnNameMap(t *testing.T) {
 	columns := GetColumnMap( &fooRecord{ Id: 3, Name: "Mary" } )
 	t.Log(columns)

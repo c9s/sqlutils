@@ -18,6 +18,9 @@ func GetTableName(val interface{}) (string) {
 	return inflect.Tableize(typeOfT.Name())
 }
 
+func GetTableNameFromType(typeOfT reflect.Type) (string) {
+	return inflect.Tableize(typeOfT.Name())
+}
 
 func GetColumnAttributesFromTag(tag *reflect.StructTag) (map[string]bool) {
 	fieldTags := strings.Split(tag.Get("field"),",")
