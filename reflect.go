@@ -6,20 +6,23 @@ import "github.com/c9s/inflect"
 import _ "github.com/bmizerany/pq"
 
 var columnNameCache = map[string] []string {};
-
+var tableNameCache = map[string] string {};
 
 type PrimaryKey interface {
 	GetPkId() int
 }
 
 func GetTableName(val interface{}) (string) {
-	t := reflect.ValueOf(val).Elem()
-	typeOfT := t.Type()
-	return inflect.Tableize(typeOfT.Name())
+	typeName := reflect.ValueOf(val).Elem().Type().Name()
+	return GetTableNameFromTypeName(typeName)
 }
 
-func GetTableNameFromType(typeOfT reflect.Type) (string) {
-	return inflect.Tableize(typeOfT.Name())
+func GetTableNameFromTypeName(typeName string) (string) {
+	if cache, ok := tableNameCache[ typeName ] ; ok {
+		return cache
+	}
+	tableNameCache[typeName] = inflect.Tableize(typeName)
+	return tableNameCache[typeName]
 }
 
 func GetColumnAttributesFromTag(tag *reflect.StructTag) (map[string]bool) {
