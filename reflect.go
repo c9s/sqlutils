@@ -2,10 +2,22 @@ package sqlutils
 import "reflect"
 import "strings"
 // import "fmt"
-// import "github.com/c9s/inflect"
+import "github.com/c9s/inflect"
 import _ "github.com/bmizerany/pq"
 
 var columnNameCache = map[string] []string {};
+
+
+type PrimaryKey interface {
+	GetPkId() int
+}
+
+
+func GetTableName(val interface{}) (string) {
+	t := reflect.ValueOf(val)
+	typeOfT := t.Type()
+	return inflect.Tableize(typeOfT.Name())
+}
 
 
 func GetColumnAttributesFromTag(tag *reflect.StructTag) (map[string]bool) {
