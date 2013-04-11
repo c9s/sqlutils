@@ -16,11 +16,21 @@ import "github.com/c9s/go-sqlutils" sqlutils
 Define your struct with json spec or with field tag:
 
 ```go
+
 type Staff struct {
-	Id        int `json:"id" field:",primary,serial"`
+	Id        int64  `field:",primary,serial"`
+	Name      string `field:",required"`
+	Gender    string `field:"gender"`
+	StaffType string `field:"staff_type"`
+	Phone     string `field:"phone"`
+}
+
+// to use with json tag
+type Staff struct {
+	Id        int64  `json:"id" field:",primary,serial"`
 	Name      string `json:"name" field:",required"`
 	Gender    string `json:"gender"`
-	StaffType string `json:"staff_type"` // valid types: doctor, nurse, ...etc
+	StaffType string `json:"staff_type"`
 	Phone     string `json:"phone"`
 }
 
