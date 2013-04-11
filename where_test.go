@@ -17,3 +17,5 @@ func TestBuildWhereClause(t *testing.T) {
 		t.Fail()
 	}
 }
+
+
