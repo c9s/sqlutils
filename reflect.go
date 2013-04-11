@@ -9,7 +9,7 @@ var columnNameCache = map[string] []string {};
 var tableNameCache = map[string] string {};
 
 type PrimaryKey interface {
-	GetPkId() int
+	GetPkId() int64
 }
 
 func GetTableName(val interface{}) (string) {

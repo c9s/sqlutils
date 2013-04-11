@@ -3,7 +3,7 @@ import "database/sql"
 
 type Result struct {
 	Sql string
-	Id  int
+	Id  int64
 	Error error
 	Result sql.Result
 }
