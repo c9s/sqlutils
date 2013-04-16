@@ -102,5 +102,3 @@ func SelectFromQuery(db *sql.DB, val interface{}, sql string, args ...interface{
 	}
 	return slice, NewResult(sql)
 }
-
-
