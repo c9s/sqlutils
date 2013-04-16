@@ -1,21 +1,28 @@
 package sqlutils
 import "testing"
+import "strings"
 
-type Staff struct {
-	Id        int64 `json:"id" field:",primary,serial"`
-	Name      string `json:"name" field:",required"`
-	Gender    string `json:"gender"`
-	StaffType string `json:"staff_type"` // valid types: doctor, nurse, ...etc
-	Phone     string `json:"phone"`
-}
+func TestSelectQuery(t *testing.T) {
+	var db = openDB()
 
-// Implement the GetPkId interface
-func (self *Staff) GetPkId() int64 {
-	return self.Id
-}
+	staff := Staff{Name: "John", Gender: "m", Phone: "0975277696"}
+	chkResult(t, Create(db, &staff, DriverPg) )
 
-func (self *Staff) SetPkId(id int64) {
-	self.Id = id
+	rows, err := SelectQuery(db, &staff)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	var count = 0
+
+	for rows.Next() {
+		count++
+	}
+	if count == 0 {
+		t.Fatal("select 0 record")
+	}
+
+	Delete(db, &staff)
 }
 
 func TestBuildSelectColumns(t * testing.T) {
@@ -23,16 +30,67 @@ func TestBuildSelectColumns(t * testing.T) {
 	if len(str) == 0 {
 		t.Fail()
 	}
-	if str != "id,name,type" {
+	if ! strings.Contains(str,"id,name,type") {
 		t.Fatal(str)
 	}
+	t.Log(str)
 }
 
 func TestBuildSelectClause(t * testing.T) {
 	staff := Staff{Id:4, Name: "John", Gender: "m", Phone: "0975277696"}
 	sql := BuildSelectClause(&staff)
-	if sql != "SELECT id,name,gender,staff_type,phone FROM staffs" {
+	if ! strings.Contains(sql,"SELECT id,name,gender,staff_type,phone,birthday") {
+		t.Fatal(sql)
+	}
+	if ! strings.Contains(sql,"FROM staffs") {
 		t.Fatal(sql)
 	}
 }
+
+func chkResult(t *testing.T, res *Result) {
+	if res.Error != nil {
+		t.Fatal(res.Error, res.Sql)
+	}
+}
+
+
+func TestSelectWhere(t *testing.T) {
+
+}
+
+func TestSelectWith(t *testing.T) {
+	var db = openDB()
+	staff := Staff{Name: "John", Gender: "m", Phone: "0975277696"}
+	chkResult(t, Create(db, &staff, DriverPg) )
+
+	staff2 := Staff{Name: "Mary", Gender: "m", Phone: "0975277696"}
+	chkResult(t, Create(db, &staff2, DriverPg) )
+
+	staff3 := Staff{Name: "Jack", Gender: "m", Phone: "0975277696"}
+	chkResult(t, Create(db, &staff3, DriverPg) )
+
+	items, result := Select(db, &staff)
+	chkResult(t, result)
+
+	staffs := items.([]Staff)
+
+	if len(staffs) == 0 {
+		t.Fatal("found 0 record")
+	}
+
+	for _, s := range staffs {
+		t.Log(s.Id)
+		if s.Name == "" {
+			t.Fatal("Empty name")
+		}
+		if s.Id > 0 {
+			var res = Delete(db, &s)
+			if res.Error != nil {
+				t.Fatal(res.Error)
+			}
+		}
+	}
+	_ = staffs
+}
+
 

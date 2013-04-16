@@ -7,7 +7,6 @@ import "database/sql"
 func Create(db *sql.DB, val interface{}, driver int) (*Result) {
 	sql , args := BuildInsertClause(val)
 
-
 	err := CheckRequired(val)
 	if err != nil {
 		return NewErrorResult(err,sql)
@@ -20,12 +19,18 @@ func Create(db *sql.DB, val interface{}, driver int) (*Result) {
 		col := GetPrimaryKeyColumnName(val)
 		sql = sql + " RETURNING " + *col
 		rows, err := PrepareAndQuery(db,sql,args...)
+
+		defer func() { rows.Close() }()
+
 		if err != nil {
 			return NewErrorResult(err,sql)
 		}
 		id, err := GetReturningIdFromRows(rows)
 		if err != nil {
 			return NewErrorResult(err,sql)
+		}
+		if val.(PrimaryKey) != nil {
+			val.(PrimaryKey).SetPkId(id)
 		}
 		result.Id = id
 	} else if driver == DriverMysql {

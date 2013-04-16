@@ -1,8 +1,8 @@
 package sqlutils
 import "strings"
-import "reflect"
-import "github.com/c9s/inflect"
 import "database/sql"
+import "reflect"
+// import "errors"
 
 // Generate SQL columns string for selecting.
 func BuildSelectColumnClause(val interface{}) (string) {
@@ -13,20 +13,82 @@ func BuildSelectColumnClause(val interface{}) (string) {
 func BuildSelectClause(val interface{}) (string) {
 	// get table name
 	// inflect.Underscore()
-	t := reflect.ValueOf(val).Elem()
-	typeOfT := t.Type()
-	tableName := inflect.Tableize(typeOfT.Name())
+	tableName := GetTableName(val)
 	return "SELECT " + BuildSelectColumnClause(val) + " FROM " + tableName;
 }
 
 
-func Select(db *sql.DB, val interface{}) (*sql.Rows, error) {
+func SelectQuery(db *sql.DB, val interface{}) (*sql.Rows, error) {
 	sql := BuildSelectClause(val)
 	return PrepareAndQuery(db, sql)
 }
 
-func SelectWith(db *sql.DB, val interface{}, postSQL string, args ...interface{}) (*sql.Rows, error) {
-	sql := BuildSelectClause(val) + " " + postSQL
+func SelectQueryWith(db *sql.DB, val interface{}, postSql string, args ...interface{}) (*sql.Rows, error) {
+	sql := BuildSelectClause(val) + " " + postSql
 	return PrepareAndQuery(db, sql, args)
 }
+
+
+func CreateSliceFromRows(val interface{}, rows *sql.Rows ) (interface{}, error) {
+	value := reflect.Indirect( reflect.ValueOf(val) )
+	typeOfVal := value.Type()
+	sliceOfVal := reflect.SliceOf(typeOfVal)
+	var slice = reflect.MakeSlice(sliceOfVal,0,100)
+	defer func() { rows.Close() }()
+	for rows.Next() {
+		var newValue = reflect.New(typeOfVal)
+		var err = FillFromRow(newValue.Interface() , rows)
+		if err != nil {
+			return slice.Interface(), err
+		}
+		slice = reflect.Append(slice, reflect.Indirect(newValue) )
+	}
+	return slice.Interface(), nil
+}
+
+
+func Select(db *sql.DB, val interface{}) (interface{}, *Result) {
+	sql := BuildSelectClause(val)
+	rows, err := PrepareAndQuery(db, sql)
+	if err != nil {
+		return nil, NewErrorResult(err,sql)
+	}
+	slice, err := CreateSliceFromRows(val, rows)
+	if err != nil {
+		return slice, NewErrorResult(err,sql)
+	}
+	return slice, NewResult(sql)
+}
+
+
+// select table with a postSQL
+func SelectWith(db *sql.DB, val interface{}, postSql string, args ...interface{}) (interface{}, *Result) {
+	sql := BuildSelectClause(val) + " " + postSql
+	rows, err := PrepareAndQuery(db, sql, args)
+	if err != nil {
+		return nil, NewErrorResult(err,sql)
+	}
+
+	slice, err := CreateSliceFromRows(val, rows)
+	if err != nil {
+		return slice, NewErrorResult(err,sql)
+	}
+	return slice, NewResult(sql)
+}
+
+func SelectWhere(db *sql.DB, val interface{}, conds map[string]interface{}) (interface{}, *Result) {
+	whereSql, args := BuildWhereClauseWithAndOp(conds)
+	sql := BuildSelectClause(val) + whereSql
+	rows, err := PrepareAndQuery(db, sql, args)
+	if err != nil {
+		return nil, NewErrorResult(err,sql)
+	}
+
+	slice, err := CreateSliceFromRows(val, rows)
+	if err != nil {
+		return slice, NewErrorResult(err,sql)
+	}
+	return slice, NewResult(sql)
+}
+
 
