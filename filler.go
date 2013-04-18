@@ -61,8 +61,6 @@ func CreateMapFromRows(rows * sql.Rows, types ...interface{}) (map[string]interf
 	var result = map[string]interface{} {}
 
 	values, reflectValues = CreateReflectValuesFromTypes(types)
-
-	rows.Next()
 	err = rows.Scan(values...)
 	if err != nil {
 		return nil, err
@@ -90,6 +88,10 @@ func FillFromRow(val interface{}, rows * sql.Rows) (error) {
 		var tag        reflect.StructTag = typeOfT.Field(i).Tag
 		var field      reflect.Value = t.Field(i)
 		var fieldType  reflect.Type = field.Type()
+
+		if tag.Get("field") == "-" {
+			continue
+		}
 
 		var columnName *string = GetColumnNameFromTag(&tag)
 		if columnName == nil {
